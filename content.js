@@ -154,7 +154,7 @@ const SITE = {
       title: "Controlling the phase transition dynamics of GeTe by Sn substitution for phase change memory, photodetection and neuromorphic devices",
       authors: "M. N. K., R. S. Singh, P. Chinmay Kumar, R. Naik, V. E. Madhavan",
       venue: "Materials Advances, 7(2), 874–885 (2026)",
-      doi: "https://doi.org/10.1039/D5MA01008J"
+      doi: "https://pubs.rsc.org/ma/article/7/2/874/1248598/Controlling-the-phase-transition-dynamics-of-GeTe"
     },
     {
       status: "published",

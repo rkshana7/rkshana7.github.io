@@ -47,7 +47,6 @@ const SITE = {
       tag: "★ HIGHLIGHT · IUAC, NEW DELHI · 2026",
       title: "Beam time approved at the Inter-University Accelerator Centre",
       text: "My proposal, “Towards the realization of a highly controllable multilevel Phase Change Memory device with low power density using ion implantation engineered Ge₄Sb₆Te₇”, was reviewed by IUAC's Accelerator Users Committee and approved for low-energy beam time.",
-      facts: ["Ge₄Sb₆Te₇ phase change memory", "Ion implantation engineering", "3 runs approved (3, 2 and 1 shifts)", "AUCID 80506"]
     }
   ],
 

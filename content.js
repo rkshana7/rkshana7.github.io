@@ -25,7 +25,7 @@ const SITE = {
 
   email: "rajkumar_p240165mt@nitc.ac.in",
   location: "Kozhikode, India (moving to Sendai, Japan)",   // EDIT after you move, e.g. "Sendai, Japan"
-  photo: "",                        // EDIT: your profile photo file, e.g. "photo.jpg" (upload it next to index.html)
+  photo: "photo.jpg",                        // EDIT: your profile photo file, e.g. "photo.jpg" (upload it next to index.html)
   photoPosition: "center",          // EDIT if your face is cropped: "center top", "center 20%", ...
   cvLink: "",                       // EDIT: link to your CV (PDF in this folder, e.g. "cv.pdf", or a Drive link)
 

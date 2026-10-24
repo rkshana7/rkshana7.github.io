@@ -193,7 +193,7 @@ const SITE = {
     { group: "Programming", items: [] },            // EDIT: add the languages you use
     { group: "Analysis & Writing", items: [] }      // EDIT: e.g. Origin, LaTeX
   ],
-  languages: ["English", "Hindi", "Manipuri"],
+  languages: ["English", "Hindi", "Manipuri", "Japanese"],
 
   /* ---------- Achievements, fellowships, workshops ---------- */
   achievements: [

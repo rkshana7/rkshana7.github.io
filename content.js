@@ -25,7 +25,7 @@ const SITE = {
 
   email: "rajkumar_p240165mt@nitc.ac.in",
   location: "Kozhikode, India (moving to Sendai, Japan)",   // EDIT after you move, e.g. "Sendai, Japan"
-  photo: "photo.jpg",                        // EDIT: your profile photo file, e.g. "photo.jpg" (upload it next to index.html)
+  photo: "",                        // EDIT: your profile photo file, e.g. "photo.jpg" (upload it next to index.html)
   photoPosition: "center",          // EDIT if your face is cropped: "center top", "center 20%", ...
   cvLink: "",                       // EDIT: link to your CV (PDF in this folder, e.g. "cv.pdf", or a Drive link)
 
@@ -120,7 +120,12 @@ const SITE = {
       type: "Experimental · Chalcogenide thin films",
       text: "Thin film fabrication, materials characterization and electrical measurement of chalcogenide phase change memory devices."
     },
-       {
+    {
+      title: "Drift-Resilient Multi-Level Synaptic Memory",
+      type: "Research proposal · Chalcogenide materials",
+      text: "Proposed development of drift-resilient, multi-level chalcogenide synaptic memory prototypes (Sn- and As-engineered GeTe, GST467 nanocomposites) for energy-efficient neuromorphic AI hardware, targeting TRL 3 to 5."
+    },
+    {
       title: "Bipolar Resistive Switching in Al/In₂O₃:Ti/Al Memristors",
       type: "Experimental · Device analysis",
       text: "Detailed analysis of bipolar switching: I-V curves are digitized programmatically to pinpoint SET/RESET transitions and non-monotonic current behaviour."

@@ -118,12 +118,7 @@ const SITE = {
       type: "Experimental · Chalcogenide thin films",
       text: "Thin film fabrication, materials characterization and electrical measurement of chalcogenide phase change memory devices."
     },
-    {
-      title: "Drift-Resilient Multi-Level Synaptic Memory",
-      type: "Research proposal · Chalcogenide materials",
-      text: "Proposed development of drift-resilient, multi-level chalcogenide synaptic memory prototypes (Sn- and As-engineered GeTe, GST467 nanocomposites) for energy-efficient neuromorphic AI hardware, targeting TRL 3 to 5."
-    },
-    {
+        {
       title: "Bipolar Resistive Switching in Al/In₂O₃:Ti/Al Memristors",
       type: "Experimental · Device analysis",
       text: "Detailed analysis of bipolar switching: I-V curves are digitized programmatically to pinpoint SET/RESET transitions and non-monotonic current behaviour."

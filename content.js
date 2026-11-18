@@ -112,7 +112,7 @@ const SITE = {
       text: "Carrying out a short-term project on I-V switching in doped phase change memory materials and devices."
     },
     {
-      tag: "School · Provisionally accepted",   // EDIT to "School · Attended" if you attended
+      tag: "School · Attended",   // EDIT to "School · Attended" if you attended
       title: "School on Characterization of Materials Engineered by Ion Beams: Transport, Structure, and Spectroscopy",
       org: "Inter-University Accelerator Centre (IUAC), New Delhi",
       date: "12 – 15 May 2026"

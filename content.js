@@ -177,7 +177,7 @@ const SITE = {
       title: "Arsenic-engineered Ge₂Sb₂Te₅ films with enhanced thermal stability and data retention for non-volatile memory applications",
       authors: "N. K. Mubaris, R. Kemparaju, R. S. Singh, A. S. Rithwik, K. Ramesh, V. E. Madhavan",
       venue: "Journal of Materials Chemistry C (Communication), published 11 November 2026",
-      doi: "10.1039/D6TC03082C"
+      doi: "https://doi.org/10.1039/D6TC03082C"
     },
     {
       status: "published",

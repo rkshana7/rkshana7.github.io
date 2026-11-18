@@ -125,7 +125,8 @@
       <div class="hero-cta" id="h-cta"></div>
     </div>
     <div class="scope" aria-hidden="true">
-      <canvas id="iv" width="520" height="380"></canvas>
+      <canvas id="iv" width="520" height="300"></canvas>
+      <div class="cap"><span>Phase change memory: SET / RESET</span><span>live · illustrative</span></div>
     </div>
   </div>
 </header>
@@ -286,7 +287,7 @@
   (function(){
     const c = $('iv'), g = c.getContext('2d'), W = c.width, H = c.height;
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const CYCLE = 12, TM = .8, TC = .4, DT = .01;      // cycle (s); melting and crystallization levels; table step
+    const CYCLE = 12, SLOW = 2.4, TM = .8, TC = .4, DT = .01;   // SLOW: real seconds per animation second (bigger = slower)      // cycle (s); melting and crystallization levels; table step
     const ss = (a, b, x) => { x = Math.min(1, Math.max(0, (x - a) / (b - a))); return x * x * (3 - 2 * x); };
     // pulse schedule: [start, end, amplitude, label]. READ is small, RESET short and high, SET longer and lower.
     const pulses = [[.6, 1.2, .25, 'READ'], [2, 2.6, 1, 'RESET'], [4, 4.6, .25, 'READ'], [6, 8, .65, 'SET'], [9.6, 10.2, .25, 'READ']];
@@ -301,16 +302,11 @@
       TT.push(T); DD.push(d);
     }
     const at = (arr, t) => arr[Math.min(N - 1, Math.max(0, Math.round(t / DT)))];
-    const cols = 10, rows = 4, atoms = [];
-    let seed = 11; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280 - .5;
-    for (let r = 0; r < rows; r++) for (let q = 0; q < cols; q++) atoms.push({q, r, jx: rnd(), jy: rnd()});
-    const mix = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
-    const cryst = [79, 208, 216], amorph = [244, 176, 79], hot = [255, 110, 60];
     const PX = 40, PW = W - 60, PY = 26, PH = 120;
     const tx = t => PX + (t / CYCLE) * PW, ty = v => PY + PH - v * PH * .95;
     const t0 = performance.now();
     (function frame(now){
-      const t = reduce ? 2.4 : ((now - t0) / 1000) % CYCLE;
+      const t = reduce ? 2.4 : ((now - t0) / 1000 / SLOW) % CYCLE;
       const Tn = at(TT, t), dn = at(DD, t), v = volt(t);
       const act = pulses.find(q => t >= q[0] && t < q[1] + .1);
       g.clearRect(0, 0, W, H); g.lineWidth = 1; g.textAlign = 'left'; g.font = '11px system-ui';
@@ -337,36 +333,25 @@
       g.textAlign = 'center'; g.fillStyle = 'rgba(159,217,221,.85)';
       pulses.forEach(q => g.fillText(q[3], tx((q[0] + q[1]) / 2), PY + PH + 14));
       g.textAlign = 'left';
-      // --- device cell: electrode, chalcogenide film, heater ---
-      const CX = 40, CY = 200, CW = W - 80, CH = 100, midx = CX + CW / 2;
-      const glow = v > .05 ? Math.min(1, v * 1.2) : 0;
-      g.fillStyle = 'rgb(' + mix([140, 165, 172], [255, 230, 170], glow).join(',') + ')'; g.fillRect(CX, CY - 16, CW, 13);
-      g.fillStyle = 'rgba(15,45,52,.9)'; g.fillRect(CX, CY, CW, CH - 24);
-      g.fillStyle = 'rgb(' + mix([70, 70, 75], hot, Math.min(1, Math.max(0, (Tn - .1) / .85))).join(',') + ')'; g.fillRect(midx - 26, CY + CH - 24, 52, 14);
-      g.fillStyle = glow > .3 ? '#06292f' : 'rgba(10,30,36,.85)'; g.fillText('electrode', CX + 4, CY - 6); g.fillStyle = 'rgba(159,217,221,.7)'; g.fillText('heater', midx + 32, CY + CH - 13);
-      const gx = (CW - 20) / (cols - 1), gy = (CH - 48) / (rows - 1), ax = CX + 10, ay = CY + 14;
-      atoms.forEach(a => {
-        const near = 1 - Math.min(1, Math.abs(a.q - (cols - 1) / 2) / 4.2);
-        const k = dn * (.3 + .7 * near);
-        const x = ax + a.q * gx + a.jx * 16 * k, y = ay + a.r * gy + a.jy * 16 * k;
-        g.fillStyle = 'rgb(' + mix(cryst, amorph, k).join(',') + ')';
-        g.beginPath(); g.arc(x, y, 5, 0, 7); g.fill();
-      });
-      // current flowing through the cell while a pulse is on (weaker when the film is amorphous)
-      if (v > .05) {
-        const flow = v * (1 - .85 * dn), n = 9;
-        for (let i = 0; i < n; i++){
-          const ph = ((t * 1.6 + i / n) % 1), x = ax + (i + .5) * (CW - 20) / n;
-          g.fillStyle = 'rgba(255,245,210,' + (0.15 + .7 * flow).toFixed(2) + ')';
-          g.beginPath(); g.arc(x, CY - 3 + ph * (CH - 20), 2.4, 0, 7); g.fill();
-        }
-      }
+      // --- resistance strip: state read out over time ---
+      const RY = PY + PH + 30, RH = 44;
+      const ry = x => RY + RH - (.1 + .8 * at(DD, x)) * RH;
+      g.strokeStyle = 'rgba(159,217,221,.3)'; g.beginPath(); g.moveTo(PX, RY); g.lineTo(PX, RY + RH); g.lineTo(PX + PW, RY + RH); g.stroke();
+      g.fillStyle = 'rgba(159,217,221,.75)'; g.textAlign = 'left'; g.fillText('Resistance', 4, RY - 6);
+      g.fillText('high', PX + PW - 28, RY + 10); g.fillText('low', PX + PW - 22, RY + RH - 4);
+      g.strokeStyle = 'rgba(139,227,232,.25)'; g.lineWidth = 2; g.beginPath();
+      for (let x = 0; x <= CYCLE; x += DT * 4){ const X = tx(x), Y = ry(x); x ? g.lineTo(X, Y) : g.moveTo(X, Y); }
+      g.stroke();
+      g.strokeStyle = '#8be3e8'; g.lineWidth = 3; g.beginPath();
+      for (let x = 0; x <= t; x += DT * 4){ const X = tx(x), Y = ry(x); x ? g.lineTo(X, Y) : g.moveTo(X, Y); }
+      g.stroke();
+      g.fillStyle = '#8be3e8'; g.beginPath(); g.arc(tx(t), ry(t), 5, 0, 7); g.fill();
       // --- status ---
       const what = act ? (act[3] === 'RESET' ? 'RESET: short, high pulse melts and quenches' : act[3] === 'SET' ? 'SET: longer, lower pulse crystallizes' : 'READ: small pulse, state not changed') : 'No pulse';
-      g.font = 'bold 12px system-ui'; g.fillStyle = act ? '#f4b04f' : 'rgba(159,217,221,.6)'; g.fillText(what, CX, CY + CH + 12);
+      g.font = 'bold 12px system-ui'; g.fillStyle = act ? '#f4b04f' : 'rgba(159,217,221,.6)'; g.fillText(what, PX, RY + RH + 26);
       const hi = dn > .5;
       g.fillStyle = hi ? '#f4b04f' : '#8be3e8';
-      g.fillText(hi ? 'Amorphous: HIGH resistance (0)' : 'Crystalline: LOW resistance (1)', CX, CY + CH + 32);
+      g.fillText(hi ? 'Amorphous: HIGH resistance (0)' : 'Crystalline: LOW resistance (1)', PX, RY + RH + 46);
       if (!reduce) requestAnimationFrame(frame);
     })(t0);
   })();

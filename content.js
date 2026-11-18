@@ -25,7 +25,7 @@ const SITE = {
 
   email: "rajkumar_p240165mt@nitc.ac.in",
   location: "Kozhikode, India (moving to Sendai, Japan)",   // EDIT after you move, e.g. "Sendai, Japan"
-  photo: "photo.jpg",                        // EDIT: your profile photo file, e.g. "photo.jpg" (upload it next to index.html)
+  photo: "",                        // EDIT: your profile photo file, e.g. "photo.jpg" (upload it next to index.html)
   photoPosition: "center",          // EDIT if your face is cropped: "center top", "center 20%", ...
   cvLink: "",                       // EDIT: link to your CV (PDF in this folder, e.g. "cv.pdf", or a Drive link)
 
@@ -102,6 +102,36 @@ const SITE = {
     }
   ],
 
+  /* ---------- Training: courses, workshops, short-term projects ---------- */
+  // image: optional certificate picture (upload it next to index.html, then add image: "name.jpg"). tag, org, date, text are optional.
+  training: [
+    {
+      tag: "Ongoing · Short-term project",
+      title: "I-V switching studies on doped PCM materials and devices",
+      org: "CeNSE, Indian Institute of Science (IISc), Bangalore",
+      text: "Carrying out a short-term project on I-V switching in doped phase change memory materials and devices."
+    },
+    {
+      tag: "Certificate",
+      title: "Semiconductor Training Program",
+      org: "CeNSE, IISc, in association with Lam Research",
+      text: "Organized by the Centre for Nano Science and Engineering (CeNSE), IISc, in collaboration with partner institutes. Supported by Lam Research and the India Semiconductor Mission, MeitY."
+    },
+    {
+      tag: "Certificate of participation",
+      title: "INUP-i2i Hands-on Training on Nanofabrication & Characterization Techniques",
+      org: "Indian Nanoelectronics Users' Programme, CeNSE, IISc, Bangalore",
+      date: "20 – 29 January 2025"
+    },
+    {
+      tag: "GIAN course · Attended",
+      title: "Chalcogenide based phase change memory for non-volatile data storage in physical/offline mode",
+      org: "Department of Electronics & Instrumentation Engineering, NIT Silchar, Assam",
+      date: "28 July – 1 August 2025",
+      text: "One-week course under the Global Initiative of Academic Networks (GIAN)."
+    }
+  ],
+
   /* ---------- Research ---------- */
   interests: [
     "Phase change memory", "Selector-only memory", "Chalcogenide thin films", "Ion implantation engineering",
@@ -120,7 +150,7 @@ const SITE = {
       type: "Experimental · Chalcogenide thin films",
       text: "Thin film fabrication, materials characterization and electrical measurement of chalcogenide phase change memory devices."
     },
-        {
+    {
       title: "Bipolar Resistive Switching in Al/In₂O₃:Ti/Al Memristors",
       type: "Experimental · Device analysis",
       text: "Detailed analysis of bipolar switching: I-V curves are digitized programmatically to pinpoint SET/RESET transitions and non-monotonic current behaviour."
@@ -144,6 +174,13 @@ const SITE = {
   publications: [
     {
       status: "published",
+      title: "Arsenic-engineered Ge₂Sb₂Te₅ films with enhanced thermal stability and data retention for non-volatile memory applications",
+      authors: "N. K. Mubaris, R. Kemparaju, R. S. Singh, A. S. Rithwik, K. Ramesh, V. E. Madhavan",
+      venue: "Journal of Materials Chemistry C (Communication), published 11 November 2026",
+      doi: "10.1039/D6TC03082C"
+    },
+    {
+      status: "published",
       title: "Tailoring thermal stability and crystallization behavior in GeTe through arsenic incorporation for electronic memories",
       authors: "R. S. Singh, N. K. Mubaris, V. E. Madhavan",
       venue: "Materials Science in Semiconductor Processing, 217, 111130 (2027)",
@@ -154,7 +191,7 @@ const SITE = {
       title: "Controlling the phase transition dynamics of GeTe by Sn substitution for phase change memory, photodetection and neuromorphic devices",
       authors: "M. N. K., R. S. Singh, P. Chinmay Kumar, R. Naik, V. E. Madhavan",
       venue: "Materials Advances, 7(2), 874–885 (2026)",
-      doi: "https://pubs.rsc.org/ma/article/7/2/874/1248598/Controlling-the-phase-transition-dynamics-of-GeTe"
+      doi: "https://doi.org/10.1039/D5MA01008J"
     },
     {
       status: "published",
@@ -193,7 +230,7 @@ const SITE = {
     { group: "Programming", items: [] },            // EDIT: add the languages you use
     { group: "Analysis & Writing", items: [] }      // EDIT: e.g. Origin, LaTeX
   ],
-  languages: ["English", "Hindi", "Manipuri", "Japanese"],
+  languages: ["English", "Hindi", "Manipuri"],
 
   /* ---------- Achievements, fellowships, workshops ---------- */
   achievements: [

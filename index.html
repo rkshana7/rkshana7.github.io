@@ -228,6 +228,8 @@
 
   // Publications
   const labels = {published:'PUBLISHED', review:'UNDER REVIEW', prep:'IN PREPARATION', patent:'PATENT GRANTED'};
+  // bold your own name in author lists (names listed in S.boldAuthor)
+  const authorsHtml = s => (S.boldAuthor || []).reduce((out, n) => out.split(esc(n)).join('<strong>' + esc(n) + '</strong>'), esc(s || ''));
   const isUrl = s => /^https?:/i.test(s || '');
   const pubLine = p => {
     if (p.doi && !isUrl(p.doi))
@@ -237,7 +239,7 @@
   };
   if (has(S.publications) || S.showEmptyHints)
     add('publications', 'Publications &amp; Patents', has(S.publications)
-      ? `<div class="stack">${S.publications.map(p => `<div class="card"><h4>${esc(p.title)}<span class="badge ${esc(p.status || 'prep')}">${labels[p.status] || 'IN PREPARATION'}</span></h4><div class="meta">${esc(p.authors || '')}${p.venue ? ' · ' + esc(p.venue) : ''}</div>${pubLine(p)}</div>`).join('')}</div>`
+      ? `<div class="stack">${S.publications.map(p => `<div class="card"><h4>${esc(p.title)}<span class="badge ${esc(p.status || 'prep')}">${labels[p.status] || 'IN PREPARATION'}</span></h4><div class="meta">${authorsHtml(p.authors)}${p.venue ? ' · ' + esc(p.venue) : ''}</div>${pubLine(p)}</div>`).join('')}</div>`
       : hint('Add papers to <code>publications</code> in content.js'));
 
   // Skills

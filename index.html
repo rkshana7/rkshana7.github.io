@@ -1,11 +1,30 @@
 <!DOCTYPE html>
+<!--
+  INDEX.HTML: THE DRAWING FILE. For words, papers, photos and links, edit content.js instead.
+  Edit this file only to change the DESIGN. Where to look (use Ctrl+F on the search words):
+
+    Colours ................ search  :root        (light) and  data-theme="dark"  (dark mode). Change both.
+    Fonts / sizes .......... search  font-family  or  font-size  in the style block
+    Page width ............. search  .wrap        (max-width)
+    Order of sections ...... search  // Highlights  ...  // Connect  (cut a whole block, paste it elsewhere)
+    Rename a section ....... the second text in its add('id', 'Label', ...) line, e.g. add('journey', 'Journey', ...)
+    Hide a section ......... leave its list empty in content.js (no need to edit here)
+    Hero animation ......... search  hero animation  (speed: SLOW, pulses: the pulses list)
+    Gallery schematics ..... search  gallery schematics
+    Browser tab / link preview text .. the <title> and <meta name="description"> just below (the tab title
+                             is replaced by pageTitle from content.js, but link previews read these two lines)
+  Do not delete the lines  <script src="content.js">  or the ids (id="...") the script uses.
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Researcher Portfolio</title>
+<title>Researcher Portfolio</title>  <!-- EDIT: e.g. Rajkumar Shanajaoba Singh | Phase Change Memory Researcher -->
+<!-- EDIT the description below: one accurate sentence about your work (shown in Google and link previews) -->
 <meta name="description" content="Research portfolio: memory devices, photodetectors, phase change materials, and computational simulation.">
 <style>
+  /* COLOURS: change these values to restyle the whole site. --accent = teal (links, buttons), --accent2 = amber (highlights),
+     --hero1/--hero2 = banner gradient. Colours are written as #rrggbb. Change the dark-mode block below too. */
   :root{
     --bg:#f6f8f9; --surface:#ffffff; --text:#14202b; --muted:#566475;
     --accent:#0d7a82; --accent2:#e58a14; --border:#dfe5ea; --shadow:0 6px 24px rgba(15,40,55,.07);

@@ -93,6 +93,9 @@
   .feature{background:linear-gradient(135deg,color-mix(in srgb,var(--accent2) 14%,var(--surface)),var(--surface));border:1px solid var(--accent2);border-radius:16px;padding:22px 24px;box-shadow:var(--shadow);margin-bottom:14px}
   .feature .tag{font-size:.72rem;font-weight:700;letter-spacing:.1em;color:var(--accent2)}
   .feature h4{font-size:1.25rem;margin:6px 0 4px;line-height:1.3}
+  .cert{display:block;margin:-18px -20px 14px;border-radius:14px 14px 0 0;overflow:hidden;border-bottom:1px solid var(--border)}
+  .cert img{width:100%;height:auto;display:block}
+  .tstat{font-size:.72rem;font-weight:700;letter-spacing:.08em;color:var(--accent2);text-transform:uppercase}
   .rv{opacity:0;transform:translateY(18px);transition:opacity .7s,transform .7s}
   .rv.in{opacity:1;transform:none}
 
@@ -123,7 +126,7 @@
     </div>
     <div class="scope" aria-hidden="true">
       <canvas id="iv" width="520" height="380"></canvas>
-      <div class="cap"><span>Pinched I-V hysteresis loop</span><span>live · illustrative</span></div>
+      <div class="cap"><span>Phase change memory: SET / RESET</span><span>live · illustrative</span></div>
     </div>
   </div>
 </header>
@@ -189,6 +192,10 @@
     add('journey', 'Journey', `<div class="two">
       <div><h3>Experience</h3>${tl(S.experience) || hint('Add your roles to <code>experience</code> in content.js')}</div>
       <div><h3>Education</h3>${tl(S.education) || hint('Add your degrees to <code>education</code> in content.js')}</div></div>`);
+
+  // Training
+  if (has(S.training))
+    add('training', 'Training', `<div class="grid">${S.training.map(t => `<div class="card">${t.image ? `<a class="cert" href="${esc(t.image)}" target="_blank" rel="noopener"><img src="${esc(t.image)}" alt="${esc(t.title || 'Certificate')}" loading="lazy"></a>` : ''}${t.tag ? `<div class="tstat">${esc(t.tag)}</div>` : ''}<h4>${esc(t.title)}</h4><div class="meta">${esc([t.org, t.date].filter(Boolean).join(' · '))}</div>${t.text ? `<p class="quote">${esc(t.text)}</p>` : ''}</div>`).join('')}</div>`);
 
   // Research
   if (has(S.interests) || has(S.projects))
@@ -276,31 +283,93 @@
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), {threshold:.08});
   document.querySelectorAll('.rv').forEach(el => io.observe(el));
 
-  /* ---------- hero animation: pinched hysteresis loop ---------- */
+  /* ---------- hero animation: phase change memory switching ---------- */
   (function(){
-    const c = $('iv'), g = c.getContext('2d'), W = c.width, H = c.height, trail = [];
+    const c = $('iv'), g = c.getContext('2d'), W = c.width, H = c.height;
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let t = 0;
-    const pt = t => { const v = Math.sin(t), i = v * (1 - 0.75 * Math.cos(t)); return [W/2 + v * W*0.38, H/2 - i * H*0.24]; };
-    (function frame(){
-      g.clearRect(0,0,W,H);
-      g.strokeStyle = 'rgba(159,217,221,.25)'; g.lineWidth = 1;
-      g.beginPath(); g.moveTo(0,H/2); g.lineTo(W,H/2); g.moveTo(W/2,0); g.lineTo(W/2,H); g.stroke();
-      g.fillStyle = 'rgba(159,217,221,.6)'; g.font = '12px system-ui';
-      g.fillText('V', W-16, H/2-8); g.fillText('I', W/2+8, 14);
-      g.strokeStyle = 'rgba(139,227,232,.35)'; g.lineWidth = 2; g.beginPath();
-      for (let a = 0; a <= Math.PI*2+.05; a += .03){ const [x,y] = pt(a); a ? g.lineTo(x,y) : g.moveTo(x,y); }
+    const CYCLE = 12, TM = .8, TC = .4, DT = .01;      // cycle (s); melting and crystallization levels; table step
+    const ss = (a, b, x) => { x = Math.min(1, Math.max(0, (x - a) / (b - a))); return x * x * (3 - 2 * x); };
+    // pulse schedule: [start, end, amplitude, label]. READ is small, RESET short and high, SET longer and lower.
+    const pulses = [[.6, 1.2, .25, 'READ'], [2, 2.6, 1, 'RESET'], [4, 4.6, .25, 'READ'], [6, 8, .65, 'SET'], [9.6, 10.2, .25, 'READ']];
+    const volt = t => pulses.reduce((m, q) => Math.max(m, q[2] * ss(q[0], q[0] + .06, t) * (1 - ss(q[1], q[1] + .06, t))), 0);
+    // precompute temperature (lagging the pulse) and lattice disorder (0 crystalline, 1 amorphous) over one cycle
+    const N = Math.round(CYCLE / DT) + 1, TT = [], DD = [];
+    let T = .1, d = 0;
+    for (let i = 0; i < N; i++){
+      T += ((.1 + .9 * volt(i * DT)) - T) * (DT / .12);
+      if (T > TM) d = Math.min(1, d + 3 * DT);            // melting disorders the lattice (frozen in by the fast quench)
+      else if (T > TC) d = Math.max(0, d - .6 * DT);      // held between Tc and Tm: crystallizes
+      TT.push(T); DD.push(d);
+    }
+    const at = (arr, t) => arr[Math.min(N - 1, Math.max(0, Math.round(t / DT)))];
+    const cols = 10, rows = 4, atoms = [];
+    let seed = 11; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280 - .5;
+    for (let r = 0; r < rows; r++) for (let q = 0; q < cols; q++) atoms.push({q, r, jx: rnd(), jy: rnd()});
+    const mix = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
+    const cryst = [79, 208, 216], amorph = [244, 176, 79], hot = [255, 110, 60];
+    const PX = 40, PW = W - 60, PY = 26, PH = 120;
+    const tx = t => PX + (t / CYCLE) * PW, ty = v => PY + PH - v * PH * .95;
+    const t0 = performance.now();
+    (function frame(now){
+      const t = reduce ? 2.4 : ((now - t0) / 1000) % CYCLE;
+      const Tn = at(TT, t), dn = at(DD, t), v = volt(t);
+      const act = pulses.find(q => t >= q[0] && t < q[1] + .1);
+      g.clearRect(0, 0, W, H); g.lineWidth = 1; g.textAlign = 'left'; g.font = '11px system-ui';
+      // --- plot: applied pulse (amber) and resulting temperature (orange-red) ---
+      g.strokeStyle = 'rgba(159,217,221,.3)';
+      g.beginPath(); g.moveTo(PX, PY); g.lineTo(PX, PY + PH); g.lineTo(PX + PW, PY + PH); g.stroke();
+      g.setLineDash([5, 4]);
+      g.strokeStyle = 'rgba(255,140,90,.5)'; g.beginPath(); g.moveTo(PX, ty(TM)); g.lineTo(PX + PW, ty(TM)); g.stroke();
+      g.strokeStyle = 'rgba(139,227,232,.5)'; g.beginPath(); g.moveTo(PX, ty(TC)); g.lineTo(PX + PW, ty(TC)); g.stroke();
+      g.setLineDash([]);
+      g.fillStyle = 'rgba(255,160,120,.9)'; g.fillText('T melt', PX + 5, ty(TM) - 4);
+      g.fillStyle = 'rgba(139,227,232,.9)'; g.fillText('T crystallize', PX + 5, ty(TC) - 4);
+      g.fillStyle = 'rgba(159,217,221,.75)'; g.fillText('Applied pulse  /  temperature', 4, 13);
+      g.strokeStyle = 'rgba(244,176,79,.28)'; g.lineWidth = 2; g.beginPath();
+      for (let x = 0; x <= CYCLE; x += DT * 4){ const X = tx(x), Y = ty(volt(x)); x ? g.lineTo(X, Y) : g.moveTo(X, Y); }
       g.stroke();
-      if (!reduce) t += .035;
-      const p = pt(t); trail.push(p); if (trail.length > 70) trail.shift();
-      g.lineWidth = 3;
-      for (let k = 1; k < trail.length; k++){
-        g.strokeStyle = 'rgba(244,176,79,' + (k/trail.length).toFixed(2) + ')';
-        g.beginPath(); g.moveTo(trail[k-1][0], trail[k-1][1]); g.lineTo(trail[k][0], trail[k][1]); g.stroke();
+      g.strokeStyle = '#f4b04f'; g.lineWidth = 3; g.beginPath();
+      for (let x = 0; x <= t; x += DT * 4){ const X = tx(x), Y = ty(volt(x)); x ? g.lineTo(X, Y) : g.moveTo(X, Y); }
+      g.stroke();
+      g.strokeStyle = '#ff7a4d'; g.lineWidth = 2; g.beginPath();
+      for (let x = 0; x <= t; x += DT * 4){ const X = tx(x), Y = ty(at(TT, x)); x ? g.lineTo(X, Y) : g.moveTo(X, Y); }
+      g.stroke();
+      g.fillStyle = '#ffd08a'; g.beginPath(); g.arc(tx(t), ty(v), 5, 0, 7); g.fill();
+      g.textAlign = 'center'; g.fillStyle = 'rgba(159,217,221,.85)';
+      pulses.forEach(q => g.fillText(q[3], tx((q[0] + q[1]) / 2), PY + PH + 14));
+      g.textAlign = 'left';
+      // --- device cell: electrode, chalcogenide film, heater ---
+      const CX = 40, CY = 200, CW = W - 80, CH = 100, midx = CX + CW / 2;
+      const glow = v > .05 ? Math.min(1, v * 1.2) : 0;
+      g.fillStyle = 'rgb(' + mix([140, 165, 172], [255, 230, 170], glow).join(',') + ')'; g.fillRect(CX, CY - 16, CW, 13);
+      g.fillStyle = 'rgba(15,45,52,.9)'; g.fillRect(CX, CY, CW, CH - 24);
+      g.fillStyle = 'rgb(' + mix([70, 70, 75], hot, Math.min(1, Math.max(0, (Tn - .1) / .85))).join(',') + ')'; g.fillRect(midx - 26, CY + CH - 24, 52, 14);
+      g.fillStyle = glow > .3 ? '#06292f' : 'rgba(10,30,36,.85)'; g.fillText('electrode', CX + 4, CY - 6); g.fillStyle = 'rgba(159,217,221,.7)'; g.fillText('heater', midx + 32, CY + CH - 13);
+      const gx = (CW - 20) / (cols - 1), gy = (CH - 48) / (rows - 1), ax = CX + 10, ay = CY + 14;
+      atoms.forEach(a => {
+        const near = 1 - Math.min(1, Math.abs(a.q - (cols - 1) / 2) / 4.2);
+        const k = dn * (.3 + .7 * near);
+        const x = ax + a.q * gx + a.jx * 16 * k, y = ay + a.r * gy + a.jy * 16 * k;
+        g.fillStyle = 'rgb(' + mix(cryst, amorph, k).join(',') + ')';
+        g.beginPath(); g.arc(x, y, 5, 0, 7); g.fill();
+      });
+      // current flowing through the cell while a pulse is on (weaker when the film is amorphous)
+      if (v > .05) {
+        const flow = v * (1 - .85 * dn), n = 9;
+        for (let i = 0; i < n; i++){
+          const ph = ((t * 1.6 + i / n) % 1), x = ax + (i + .5) * (CW - 20) / n;
+          g.fillStyle = 'rgba(255,245,210,' + (0.15 + .7 * flow).toFixed(2) + ')';
+          g.beginPath(); g.arc(x, CY - 3 + ph * (CH - 20), 2.4, 0, 7); g.fill();
+        }
       }
-      g.fillStyle = '#f4b04f'; g.beginPath(); g.arc(p[0], p[1], 6, 0, 7); g.fill();
-      requestAnimationFrame(frame);
-    })();
+      // --- status ---
+      const what = act ? (act[3] === 'RESET' ? 'RESET: short, high pulse melts and quenches' : act[3] === 'SET' ? 'SET: longer, lower pulse crystallizes' : 'READ: small pulse, state not changed') : 'No pulse';
+      g.font = 'bold 12px system-ui'; g.fillStyle = act ? '#f4b04f' : 'rgba(159,217,221,.6)'; g.fillText(what, CX, CY + CH + 12);
+      const hi = dn > .5;
+      g.fillStyle = hi ? '#f4b04f' : '#8be3e8';
+      g.fillText(hi ? 'Amorphous: HIGH resistance (0)' : 'Crystalline: LOW resistance (1)', CX, CY + CH + 32);
+      if (!reduce) requestAnimationFrame(frame);
+    })(t0);
   })();
 
   /* ---------- gallery schematics ---------- */
